@@ -35,7 +35,7 @@ export const filterSlice = createSlice({
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
     },
-    clearFilters: (state) => (state = initialState),
+    clearFilters: (state) => Object.assign(state, initialState),
   },
 });
 

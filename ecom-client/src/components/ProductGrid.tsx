@@ -3,13 +3,6 @@ import { useGetProductsQuery } from "../apiServices/productApi";
 import { useAppSelector } from "../redux/hooks";
 import ProductCard from "./ProductCard";
 
-const dummyProducts = Array.from({ length: 8 }).map((_, i) => ({
-  id: `${i + 1}`,
-  title: `Sample Product ${i + 1}`,
-  price: 499 + i * 100,
-  image: "https://picsum.photos/400/400?random=" + i,
-}));
-
 export default function ProductGrid() {
   const { data: products } = useGetProductsQuery();
 

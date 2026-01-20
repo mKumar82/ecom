@@ -5,7 +5,6 @@ import type {
   ConfirmPaymentResponseType,
   PaymentRequestType,
   PaymentResponseType,
-  VerifyPaymentRequestType,
   VerifyPaymentResponseType,
 } from "./app_types";
 

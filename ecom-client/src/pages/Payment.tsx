@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 import { useGetOrderQuery } from "../apiServices/orderApi";
 import { useInitiatePaymentMutation } from "../apiServices/paymentApi";
 
@@ -10,7 +10,7 @@ const Payment = () => {
 
   const order = data!;
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [initaitePayment] = useInitiatePaymentMutation();
   const handleConfirmPayNow = async () => {
