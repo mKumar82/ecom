@@ -4,6 +4,7 @@ import com.ecom.ProductService.entity.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,10 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+//@ConditionalOnProperty(
+//        value = "app.kafka.enabled",
+//        havingValue = "true"
+//)
 public class ProductEventProducer {
     private final KafkaTemplate<String,Object> kafkaTemplate;
 
