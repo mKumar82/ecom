@@ -41,7 +41,7 @@ public class InventoryEventConsumer {
 
             case "ORDER_CREATED" -> handleOrderCreated(orderId, payload);
 
-            case "ORDER_CANCELLED" -> handleOrderCancelled(orderId);
+            case "ORDER_CANCEL" -> handleOrderCancelled(orderId);
 
             default -> log.warn("⚠️ Unknown eventType {}", eventType);
         }
