@@ -8,7 +8,7 @@ const Home = () => {
     <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
       {/* Desktop Filters */}
       <aside className="hidden lg:block">
-        <FilterSidebar />
+        {/* <FilterSidebar /> */}
       </aside>
 
       {/* Products Section */}
