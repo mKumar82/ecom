@@ -6,6 +6,22 @@ This project focuses on **scalability, service isolation, fault handling, and cl
 
 ---
 
+## 🎥 Demo Video
+
+📌 **Silent Screen Recording (No Voice)**  
+This demo showcases the complete end-to-end flow of the distributed e-commerce system, including frontend interaction, backend microservices, and asynchronous order processing.
+
+▶️ **Demo Video Link:**  
+https://drive.google.com/file/d/1EbeCnfKPMs5U0otnrmh_Ph2Qh47gRfEd/view?usp=sharing
+
+**Demo Highlights:**
+- User login and product browsing
+- Order creation from React frontend
+- Real-time order status updates (CREATED → RESERVED → PAID)
+- Backend services registered via Eureka
+- Event-driven communication using Kafka
+- Inventory reservation and payment confirmation flow
+
 ## 🚀 Tech Stack
 
 ### Frontend
@@ -52,6 +68,7 @@ This project focuses on **scalability, service isolation, fault handling, and cl
 | Order Service | Order creation and lifecycle management |
 | Inventory Service | Product stock management and reservation |
 | Payment Service | Payment processing and confirmation |
+| Product Service | Product creation |
 
 ---
 
@@ -64,7 +81,8 @@ This project focuses on **scalability, service isolation, fault handling, and cl
   - **Kafka events** (asynchronous)
 - JWT-based authentication for secured APIs
 
-> 📌 **Architecture Diagram:** *(To be added)*
+> 📌 **Architecture Diagram:** 
+![System Architecture Diagram](diagram/ecomHLD.png)
 
 ---
 
