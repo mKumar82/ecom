@@ -3,8 +3,11 @@ import {
   addToCart,
   decreaseQuantity,
   increaseQuantity,
+  removeFromCart,
 } from "../redux/features/cart/cartSlice";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { MdAddBox } from "react-icons/md";
+import toast from "react-hot-toast";
 
 type Product = {
   id: string;
@@ -22,16 +25,21 @@ export default function ProductCard({ product }: { product: Product }) {
   });
   const handleAddToCart = (product: Product) => {
     dispatch(addToCart(product));
+    toast.success("Added to cart");
   };
   const handleDecreaseQuantity = (product: Product) => {
-    dispatch(decreaseQuantity(product));
+      if (productQuantity > 1) {
+        dispatch(decreaseQuantity(product));
+      } else {
+        dispatch(removeFromCart(product));
+      }
   };
   const handleIncreaseQuantity = (product: Product) => {
     dispatch(increaseQuantity(product));
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border hover:shadow-md transition">
+    <div className="bg-white rounded-xl shadow-sm border hover:shadow-lg transition-transform duration-300 hover:scale-105">
       {/* Image */}
       <div className="aspect-square bg-gray-100 rounded-t-xl overflow-hidden">
         <img
@@ -43,22 +51,23 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="text-sm font-medium line-clamp-2">{product.title}</h3>
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-3xl font-semibold">₹{product.price}</span>
+        <h3 className="text-lg font-medium line-clamp-2">{product.title}</h3>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <span className="text-3xl text-center w-22 font-semibold">
+            ₹{product.price}
+          </span>
           {productQuantity === 0 ? (
-            <button
-              onClick={() => handleAddToCart(product)}
-              className="text-xl text-blue-600 hover:underline"
-            >
-              Add to Cart
+            <button onClick={() => handleAddToCart(product)}>
+              <MdAddBox size={30} />
             </button>
           ) : (
-            <div className="flex justify-between items-center gap-4">
+            <div className="flex justify-between items-center gap-1">
               <button onClick={() => handleDecreaseQuantity(product)}>
                 <CiCircleMinus className="size-8" />
               </button>
-              <span className="text-3xl">{productQuantity}</span>
+              <span className="text-3xl text-center w-8">
+                {productQuantity}
+              </span>
               <button onClick={() => handleIncreaseQuantity(product)}>
                 <CiCirclePlus className="size-8" />
               </button>

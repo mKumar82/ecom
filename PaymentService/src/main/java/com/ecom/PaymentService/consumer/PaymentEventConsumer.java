@@ -17,7 +17,7 @@ public class PaymentEventConsumer {
 
     private final PaymentService paymentService;
 
-    @KafkaListener(topics = "inventory-events", groupId = "payment-service-group")
+//    @KafkaListener(topics = "inventory-events", groupId = "payment-service-group")
     public void handleInventoryReserved(JsonNode message) {
 
         String eventType = message.get("eventType").asText();
@@ -26,8 +26,8 @@ public class PaymentEventConsumer {
         if (!"INVENTORY_RESERVED".equals(eventType)) return;
 
         UUID orderId = UUID.fromString(payload.get("orderId").asText());
-        UUID productId = UUID.fromString(payload.get("productId").asText());
-        int quantity = payload.get("quantity").asInt();
+//        UUID productId = UUID.fromString(payload.get("productId").asText());
+//        int quantity = payload.get("quantity").asInt();
         double totalAmount = payload.get("totalAmount").asDouble();
 
         log.info("📥 INVENTORY_RESERVED received → orderId={}",

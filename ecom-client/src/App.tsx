@@ -12,13 +12,19 @@ import MyOrders from "./pages/MyOrders";
 import Payment from "./pages/Payment";
 import DummyGateway from "./pages/DummyGateway";
 import PaymentCallback from "./pages/PaymentCallback";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   return (
     <BrowserRouter>
       {isCartOpen && <CartDrawer setIsCartOpen={setIsCartOpen} />}
-
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
       <Navbar setIsCartOpen={setIsCartOpen} />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -29,7 +35,7 @@ function App() {
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/payment-gateway" element={<DummyGateway />} />
-          
+
           <Route path="/payment-callback" element={<PaymentCallback />} />
         </Route>
       </Routes>
