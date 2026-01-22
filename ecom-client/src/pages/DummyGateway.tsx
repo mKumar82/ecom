@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useConfirmPaymentMutation } from "../apiServices/paymentApi";
-import toast from "react-hot-toast";
+
 
 const DummyGateway = () => {
   const [searchParams] = useSearchParams();
