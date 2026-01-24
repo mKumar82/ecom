@@ -62,12 +62,12 @@ const Navbar = ({ setIsCartOpen }: NavbarProps) => {
                 Signup
               </Link>
 
-              <Link
+              {/* <Link
                 to="/my-orders"
                 className="text-xl text-gray-600 hover:text-blue-600"
               >
-                <PiVanDuotone size={26} />
-              </Link>
+                MyOrders
+              </Link> */}
 
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -91,7 +91,8 @@ const Navbar = ({ setIsCartOpen }: NavbarProps) => {
                 to="/my-orders"
                 className="text-xl text-gray-600 hover:text-blue-600"
               >
-                <PiVanDuotone size={26} />
+                {/* <PiVanDuotone size={26} /> */}
+                MyOrders
               </Link>
               <button
                 onClick={() => setIsCartOpen(true)}

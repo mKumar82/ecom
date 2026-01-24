@@ -3,13 +3,15 @@ import { useRegisterMutation } from "../apiServices/authApi";
 import { useAppDispatch } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../redux/features/user/userSlice";
+import toast from "react-hot-toast";
 
 const Register = () => {
-  const [register] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: any) => {
+    e.preventDefault();
     try {
       const response = await register({ name, email, password }).unwrap();
       console.log("JWT response:", response);
@@ -17,6 +19,7 @@ const Register = () => {
       // dispatch to redux
       dispatch(setToken(response.token));
       localStorage.setItem("token", response.token);
+      toast.success("Account created successfully");
       navigate("/");
     } catch (err) {
       console.error("register failed:", err);
@@ -26,20 +29,23 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const isEmpty: boolean = !name || !email || !password;
+
   console.log("username:", setName);
   console.log("Email:", email);
   console.log("Password:", password);
   return (
     <div className="bg-transparent w-full h-screen flex justify-center items-center">
-      <div className="w-1/2 p-3 border rounded-2xl bg-white">
+      <div className="w-full md:w-1/2 lg:w-1/4 p-3 m-5 border rounded-2xl bg-white">
         <h1 className="text-3xl text-gray-900">Sign up</h1>
-        <form className="flex flex-col gap-4 mt-6">
+        <form onSubmit={handleRegister} className="flex flex-col gap-4 mt-6">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             type="text"
             placeholder="Username"
             className="border p-2 rounded-md"
+            required={true}
           />
           <input
             value={email}
@@ -47,6 +53,7 @@ const Register = () => {
             type="email"
             placeholder="Email"
             className="border p-2 rounded-md"
+            required={true}
           />
           <input
             value={password}
@@ -54,13 +61,17 @@ const Register = () => {
             type="password"
             placeholder="Password"
             className="border p-2 rounded-md"
+            required={true}
           />
           <button
-            onClick={handleRegister}
-            type="button"
-            className="bg-blue-600 text-white p-2 rounded-md mt-4 hover:bg-blue-700"
+            disabled={isLoading || isEmpty}
+            // onClick={handleRegister}
+            type="submit"
+            className={`px-4 py-2 rounded ${
+              isLoading || isEmpty ? "bg-gray-400" : "bg-yellow-400"
+            }`}
           >
-            Sign up
+            {isLoading ? "Signing up..." : "Sign up"}
           </button>
         </form>
       </div>

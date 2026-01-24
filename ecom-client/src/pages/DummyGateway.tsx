@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useConfirmPaymentMutation } from "../apiServices/paymentApi";
 
+
 const DummyGateway = () => {
   const [searchParams] = useSearchParams();
 
@@ -12,6 +13,7 @@ const DummyGateway = () => {
   const handleSuccess = async (paymentId: string, callbackUrl: string) => {
     const message = await confirmPayment({ paymentId, status: "SUCCESS" });
     console.log("messagec:::::::::", message);
+    
     const redirect = `${callbackUrl}?paymentId=${paymentId}&status=SUCCESS`;
 
     window.location.replace(redirect);
@@ -19,6 +21,7 @@ const DummyGateway = () => {
   const handleFailure = async (paymentId: string, callbackUrl: string) => {
     const message = await confirmPayment({ paymentId, status: "FAILED" });
     console.log("messagec:::::::::", message);
+    
     const redirect = `${callbackUrl}?paymentId=${paymentId}&status=FAILED`;
 
     window.location.replace(redirect);
@@ -30,14 +33,14 @@ const DummyGateway = () => {
       <p>Payment ID: {paymentId}</p>
 
       <button
-        className="bg-green-600 text-white px-6 py-2 rounded"
+        className="bg-green-600 text-white px-6 py-2 rounded hover:scale-105"
         onClick={() => handleSuccess(paymentId!, callbackUrl!)}
       >
         Pay Success
       </button>
 
       <button
-        className="bg-red-600 text-white px-6 py-2 rounded"
+        className="bg-red-600 text-white px-6 py-2 rounded hover:scale-105"
         onClick={() => handleFailure(paymentId!, callbackUrl!)}
       >
         Pay Failed
