@@ -1,11 +1,11 @@
 package com.ecom.OrderService.controller;
 
-import com.ecom.OrderService.dto.CancelOrderResponse;
-import com.ecom.OrderService.dto.CreateOrderRequest;
-import com.ecom.OrderService.dto.OrderResponse;
+import com.ecom.OrderService.dto.*;
 import com.ecom.OrderService.entity.Order;
+import com.ecom.OrderService.entity.OrderStatus;
 import com.ecom.OrderService.service.OrderService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -43,5 +43,29 @@ public class OrderController {
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<CancelOrderResponse> cancelOrder(@PathVariable UUID orderId){
         return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    }
+
+    @GetMapping("/inventory-reserved/{orderId}")
+    public ResponseEntity<Void> inventoryReserved(@PathVariable UUID orderId){
+        orderService.setOrderStatus(orderId, OrderStatus.RESERVED);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/inventory-rejected/{orderId}")
+    public ResponseEntity<Void> inventoryrejected(@PathVariable UUID orderId){
+        orderService.setOrderStatus(orderId, OrderStatus.CANCELLED);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/payment-completed/{orderId}")
+    public ResponseEntity<Void> paymentCompleted(@PathVariable UUID orderId){
+        orderService.setOrderStatus(orderId, OrderStatus.COMPLETED);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/payment-failed/{orderId}")
+    public ResponseEntity<Void> paymentFailed(@PathVariable UUID orderId){
+        orderService.setOrderStatus(orderId, OrderStatus.CANCELLED);
+        return ResponseEntity.ok().build();
     }
 }

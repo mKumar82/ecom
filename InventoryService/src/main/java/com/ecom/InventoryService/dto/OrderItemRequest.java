@@ -1,8 +1,7 @@
-package com.ecom.OrderService.dto;
+package com.ecom.InventoryService.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
 import java.util.UUID;
 

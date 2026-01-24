@@ -1,4 +1,4 @@
-package com.ecom.ProductService.config;
+package com.ecom.OrderService.config;
 
 import lombok.Getter;
 import lombok.Setter;

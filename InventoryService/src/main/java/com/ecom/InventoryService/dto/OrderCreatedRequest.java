@@ -1,4 +1,4 @@
-package com.ecom.OrderService.dto;
+package com.ecom.InventoryService.dto;
 
 import java.util.List;
 import java.util.UUID;
