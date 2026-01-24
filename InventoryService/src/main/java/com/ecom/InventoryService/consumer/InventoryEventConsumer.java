@@ -3,6 +3,7 @@ package com.ecom.InventoryService.consumer;
 import com.ecom.InventoryService.Entity.Inventory;
 import com.ecom.InventoryService.Entity.InventoryReservation;
 import com.ecom.InventoryService.Entity.ReservationStatus;
+import com.ecom.InventoryService.dto.ProductCreatedRequest;
 import com.ecom.InventoryService.producer.InventoryEventProducer;
 import com.ecom.InventoryService.repository.InventoryRepository;
 import com.ecom.InventoryService.repository.ReservationRepository;
@@ -135,13 +136,7 @@ public class InventoryEventConsumer {
         UUID productId = UUID.fromString(payload.get("productId").asText());
         int quantity = payload.get("quantity").asInt();
 
-        Inventory inventory = Inventory.builder()
-                .productId(productId)
-                .availableQuantity(quantity)
-                .reserveQuantity(0)
-                .build();
-
-        inventoryRepository.save(inventory);
+        inventoryService.createInventory(new ProductCreatedRequest(productId,quantity));
         log.info("✅ Inventory created for productId={}", productId);
     }
 

@@ -3,6 +3,7 @@ package com.ecom.InventoryService.service;
 import com.ecom.InventoryService.Entity.Inventory;
 import com.ecom.InventoryService.Entity.InventoryReservation;
 import com.ecom.InventoryService.Entity.ReservationStatus;
+import com.ecom.InventoryService.dto.ProductCreatedRequest;
 import com.ecom.InventoryService.repository.InventoryRepository;
 import com.ecom.InventoryService.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
@@ -43,5 +44,15 @@ public class InventoryService {
         reservationRepository.save(reservation);
 
         return true;
+    }
+
+    public void createInventory(ProductCreatedRequest request){
+        Inventory inventory = Inventory.builder()
+                .productId(request.productId())
+                .availableQuantity(request.quantity())
+                .reserveQuantity(0)
+                .build();
+
+        inventoryRepository.save(inventory);
     }
 }
