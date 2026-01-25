@@ -1,21 +1,27 @@
 package com.ecom.ProductService.service;
 
+import com.ecom.ProductService.config.KafkaToggleConfig;
 import com.ecom.ProductService.dto.CreateProductRequest;
+import com.ecom.ProductService.dto.ProductCreatedRequest;
 import com.ecom.ProductService.dto.ProductResponse;
 import com.ecom.ProductService.entity.Product;
+import com.ecom.ProductService.feignClient.InventoryClient;
 import com.ecom.ProductService.producer.ProductEventProducer;
 import com.ecom.ProductService.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final ProductEventProducer productEventProducer;
+    private final Optional<ProductEventProducer> productEventProducer;
+    private final KafkaToggleConfig kafkaToggleConfig;
+    private final InventoryClient inventoryClient;
 
     public Product createProduct(CreateProductRequest request){
         Product product = Product.builder()
@@ -27,7 +33,13 @@ public class ProductService {
                 .build();
 
         Product savedProduct = productRepository.save(product);
-        productEventProducer.publishProductCreated(savedProduct);
+        if(kafkaToggleConfig.isEnabled()){
+            productEventProducer.ifPresent(producer->producer.publishProductCreated(savedProduct));
+        }else {
+            inventoryClient.createInventory( new ProductCreatedRequest(
+                    product.getId(),
+                    product.getAvailableQuantity()));
+        }
         return savedProduct;
     }
 

@@ -6,19 +6,25 @@ import com.ecom.PaymentService.event.PaymentFailedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        name = "app.kafka.enabled",
+        havingValue = "true"
+)
 public class PaymentEventProducer {
 
-    private final KafkaTemplate<String,Object> kafkaTemplate;
+    private final Optional<KafkaTemplate<String,Object>> kafkaTemplate;
 
     private Map<String, Object> baseEvent(String type, String source, Object payload) {
         return Map.of(
@@ -33,15 +39,15 @@ public class PaymentEventProducer {
     public void publishPaymentCompleted(UUID orderId,UUID paymentId,double totalAmount)
     {
         Map<String, Object> payload = Map.of(
-                "orderId", orderId.toString(),
-                "paymentId", paymentId.toString(),
-                "totalAmount",totalAmount
+                "orderId", orderId.toString()
+//                "paymentId", paymentId.toString(),
+//                "totalAmount",totalAmount
         );
 
-        kafkaTemplate.send(
+        kafkaTemplate.ifPresent(template->template.send(
                 "payment-events",
                 baseEvent("PAYMENT_COMPLETED", "PAYMENT_SERVICE", payload)
-        );
+        ));
         log.info("💳 Payment COMPLETED → orderId={}",
                 orderId);
     }
@@ -50,15 +56,15 @@ public class PaymentEventProducer {
     public void publishPaymentFailed(UUID orderId, UUID paymentId, String reason)
     {
         Map<String, Object> payload = Map.of(
-                "orderId", orderId.toString(),
-                "paymentId", paymentId.toString(),
-                "reason", reason
+                "orderId", orderId.toString()
+//                "paymentId", paymentId.toString(),
+//                "reason", reason
         );
 
-        kafkaTemplate.send(
+        kafkaTemplate.ifPresent(template->template.send(
                 "payment-events",
                 baseEvent("PAYMENT_FAILED", "PAYMENT_SERVICE", payload)
-        );
+        ));
         log.info("💳❌ Payment FAILED → orderId={}",
                 orderId);
 

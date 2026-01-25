@@ -1,36 +1,36 @@
 package com.ecom.OrderService.service;
 
+import com.ecom.OrderService.config.KafkaToggleConfig;
 import com.ecom.OrderService.dto.*;
 import com.ecom.OrderService.entity.Order;
 import com.ecom.OrderService.entity.OrderItem;
 import com.ecom.OrderService.entity.OrderStatus;
+import com.ecom.OrderService.feignClient.InventoryClient;
 import com.ecom.OrderService.feignClient.ProductClient;
-import com.ecom.OrderService.feignClient.UserClient;
 import com.ecom.OrderService.producer.OrderEventProducer;
 import com.ecom.OrderService.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final OrderEventProducer orderEventProducer;
+    private final Optional<OrderEventProducer> orderEventProducer;
     private final ProductClient productClient;
-    private final UserClient userClient;
+    private final KafkaToggleConfig kafkaToggleConfig;
+    private final InventoryClient inventoryClient;
 
     @Transactional
-    public OrderResponse createOrder(CreateOrderRequest request, UUID userId){
+    private Order creatingOrder(CreateOrderRequest request, UUID userId){
 
         List<ProductResponse> products = productClient.getProductsByIds(
                 request.orderItems().stream()
@@ -39,7 +39,6 @@ public class OrderService {
         );
 
         log.info("products received : {}",products);
-
         Order order = Order.builder()
                 .userId(userId)
                 .status(OrderStatus.CREATED)
@@ -74,8 +73,31 @@ public class OrderService {
         order.setOrderItems(orderItems);
         order.setTotalAmount(totalAmount);
 
-        Order savedOrder = orderRepository.save(order);
-        orderEventProducer.publishOrderCreated(savedOrder);
+         return orderRepository.save(order);
+    }
+
+    @Async
+    public void notifyInventoryAsync(Order savedOrder) {
+        try {
+            inventoryClient.orderCreated(new OrderCreatedRequest(savedOrder.getId(),
+                    savedOrder.getOrderItems().stream()
+                            .map(item->new OrderItemRequest(item.getProductId(),
+                                    item.getQuantity())).toList()));
+        } catch (Exception ex) {
+            log.error("Inventory notification failed for order {}", savedOrder.getId(), ex);
+            setOrderStatus(savedOrder.getId(), OrderStatus.CANCELLED);
+        }
+    }
+
+    public OrderResponse createOrder(CreateOrderRequest request, UUID userId){
+
+        Order savedOrder = creatingOrder(request, userId);
+
+        if(kafkaToggleConfig.isEnabled()){
+            orderEventProducer.ifPresent(producer->producer.publishOrderCreated(savedOrder));
+        }else {
+            notifyInventoryAsync(savedOrder);
+        }
 
         OrderResponse orderResponse = OrderResponse.builder()
                 .id(savedOrder.getId())
@@ -157,7 +179,23 @@ public class OrderService {
     public CancelOrderResponse cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow();
         orderRepository.delete(order);
-        orderEventProducer.publishOrderCancel(order);
+        if(kafkaToggleConfig.isEnabled()){
+            orderEventProducer.ifPresent(producer->producer.publishOrderCancel(order));
+        }else {
+            inventoryClient.orderCancelled(orderId);
+        }
+
         return CancelOrderResponse.builder().message("order deleted successfully").build();
+    }
+
+    public void setOrderStatus(UUID orderId,OrderStatus orderStatus){
+        log.info("Order status updationg for: {}", orderId);
+        orderRepository.findById(orderId).ifPresentOrElse(
+                order->{
+                    order.setStatus(orderStatus);
+                    orderRepository.save(order);
+                },
+                ()->log.warn("Order not found for id: {}", orderId)
+        );
     }
 }

@@ -1,10 +1,11 @@
 package com.ecom.PaymentService.service;
 
-import com.ecom.PaymentService.dto.ConfirmPaymentResponse;
-import com.ecom.PaymentService.dto.PaymentResponse;
-import com.ecom.PaymentService.dto.VerifyPaymentResponse;
+import com.ecom.PaymentService.config.KafkaToggleConfig;
+import com.ecom.PaymentService.dto.*;
 import com.ecom.PaymentService.entity.Payment;
 import com.ecom.PaymentService.entity.PaymentStatus;
+import com.ecom.PaymentService.feignClient.InventoryClient;
+import com.ecom.PaymentService.feignClient.OrderClient;
 import com.ecom.PaymentService.producer.PaymentEventProducer;
 import com.ecom.PaymentService.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,7 +23,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
-    private final PaymentEventProducer paymentEventProducer;
+    private final Optional<PaymentEventProducer> paymentEventProducer;
+    private final KafkaToggleConfig kafkaToggleConfig;
+    private final InventoryClient inventoryClient;
+    private final OrderClient orderClient;
 
     @Transactional
     public PaymentResponse createPayment(UUID orderId, double amount){
@@ -53,10 +58,20 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow();
         if(status.equals(PaymentStatus.SUCCESS)){
             payment.setStatus(PaymentStatus.SUCCESS);
-            paymentEventProducer.publishPaymentCompleted(payment.getOrderId(),payment.getId(),payment.getAmount());
+            if(kafkaToggleConfig.isEnabled()){
+                paymentEventProducer.ifPresent(producer->producer.publishPaymentCompleted(payment.getOrderId(),payment.getId(),payment.getAmount()));
+            }else {
+                inventoryClient.paymentCompleted(payment.getOrderId());
+                orderClient.paymentCompleted(payment.getOrderId());
+            }
         } else if (status.equals(PaymentStatus.FAILED)) {
             payment.setStatus(PaymentStatus.FAILED);
-            paymentEventProducer.publishPaymentFailed(payment.getOrderId(),payment.getId(),"technical error");
+            if(kafkaToggleConfig.isEnabled()){
+                paymentEventProducer.ifPresent(producer->producer.publishPaymentFailed(payment.getOrderId(),payment.getId(),"technical error"));
+            }else {
+                inventoryClient.paymentFailed(payment.getOrderId());
+                orderClient.paymentFailed(payment.getOrderId());
+            }
         }
         paymentRepository.save(payment);
 

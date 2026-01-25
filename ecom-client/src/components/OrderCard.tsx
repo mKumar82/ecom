@@ -8,10 +8,12 @@ import {
 } from "../apiServices/orderApi";
 import { useAppSelector } from "../redux/hooks";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { ThreeDot } from "react-loading-indicators";
 
 const OrderCard = (order: OrderType) => {
   const navigate = useNavigate();
-  const [cancelOrder] = useCancelOrderMutation();
+  const [cancelOrder, { isLoading }] = useCancelOrderMutation();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
 
   const [shouldPoll, setShouldPoll] = useState(order.status === "CREATED");
@@ -31,6 +33,7 @@ const OrderCard = (order: OrderType) => {
 
   const handleDeleteOrder = async () => {
     const res = await cancelOrder(order.id).unwrap();
+    toast.success("Order cancelled");
     console.log("delete mutation res:   ", res);
   };
 
@@ -66,20 +69,37 @@ const OrderCard = (order: OrderType) => {
           </button>
         )}
 
-        {effectiveOrder.status === "CREATED" && (
-          <button onClick={handleDeleteOrder}>
-            <RiDeleteBin5Line color="red" className="size-8" />
-          </button>
-        )}
+        {effectiveOrder.status === "CREATED" &&
+          (isLoading ? (
+            <button disabled={true}>
+              <ThreeDot color="#32cd32" size="small" text="" textColor="" />
+            </button>
+          ) : (
+            <button
+              className="transition-transform hover:scale-110 duration-300"
+              onClick={handleDeleteOrder}
+            >
+              <RiDeleteBin5Line color="red" className="size-8" />
+            </button>
+          ))}
 
         {effectiveOrder.status === "RESERVED" && (
           <div className=" flex gap-3">
-            <button onClick={handleDeleteOrder} className="">
-              <RiDeleteBin5Line color="red" className="size-8" />
-            </button>
+            {isLoading ? (
+              <button disabled={true}>
+                <ThreeDot color="#32cd32" size="small" text="" textColor="" />
+              </button>
+            ) : (
+              <button
+                className="transition-transform hover:scale-110 duration-300"
+                onClick={handleDeleteOrder}
+              >
+                <RiDeleteBin5Line color="red" className="size-8" />
+              </button>
+            )}
             <button
               onClick={() => handlePayNow()}
-              className="bg-yellow-400 px-4 py-1 rounded"
+              className="bg-yellow-400 px-4 py-1 rounded transition-transform hover:scale-110 duration-300"
             >
               Pay Now
             </button>
@@ -96,34 +116,38 @@ const OrderCard = (order: OrderType) => {
         )}
 
         {effectiveOrder.status === "COMPLETED" && (
-          <span className="bg-green-400 px-4 py-1 rounded text-white">
+          <button className="bg-green-400 px-4 py-1 rounded text-white">
             Paid
-          </span>
+          </button>
         )}
       </div>
 
-      <div className="p-4">
-        <p className="text-lg mb-2">Date: {order.createdAt.slice(0, 10)}</p>
-        <p className="text-lg mb-2">Total Amount: ₹{order.totalAmount}</p>
-        <p className="text-lg mb-2">Status: {effectiveOrder.status}</p>
-        <h2 className="text-xl font-semibold mt-4 mb-2">Items:</h2>
-        {order.items.map((item) => (
-          <div
-            key={item.productId}
-            className="flex items-center mb-4 border-b pb-2"
-          >
-            <img
-              src={item.imageUrl}
-              alt={item.name}
-              className="object-cover rounded mr-4 aspect-square size-16"
-            />
-            <div>
-              <h3 className="text-lg font-medium">{item.name}</h3>
-              <p className="text-md">Quantity: {item.quantity}</p>
-              <p className="text-md">Price: ₹{item.price}</p>
+      <div className="p-4 flex">
+        <div className="flex-1 lg:flex-1">
+          <p className="text-lg mb-2">Date: {order.createdAt.slice(0, 10)}</p>
+          <p className="text-lg mb-2">Total Amount: ₹{order.totalAmount}</p>
+          <p className="text-lg mb-2">Status: {effectiveOrder.status}</p>
+        </div>
+        <div className="flex-1 lg:flex-3 lg:flex gap-10">
+          <h2 className="text-xl font-semibold mb-2">Items:</h2>
+          {order.items.map((item) => (
+            <div
+              key={item.productId}
+              className="flex items-center mb-4  pb-2 w-fit"
+            >
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="object-cover rounded mr-4 aspect-square size-16"
+              />
+              <div>
+                <h3 className="text-lg font-medium">{item.name}</h3>
+                <p className="text-md">Quantity: {item.quantity}</p>
+                <p className="text-md">Price: ₹{item.price}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
