@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         // ✅ PUBLIC endpoints
-                        .pathMatchers("/userservice/auth/**","/productservice/products").permitAll()
+                        .pathMatchers("/userservice/auth/**","/productservice/products","/health").permitAll()
                         // 🔒 everything else requires JWT
                         .anyExchange().authenticated()
                 )
