@@ -9,10 +9,11 @@ import {
 import { useAppSelector } from "../redux/hooks";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ThreeDot } from "react-loading-indicators";
 
 const OrderCard = (order: OrderType) => {
   const navigate = useNavigate();
-  const [cancelOrder] = useCancelOrderMutation();
+  const [cancelOrder, { isLoading }] = useCancelOrderMutation();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
 
   const [shouldPoll, setShouldPoll] = useState(order.status === "CREATED");
@@ -68,23 +69,34 @@ const OrderCard = (order: OrderType) => {
           </button>
         )}
 
-        {effectiveOrder.status === "CREATED" && (
-          <button
-            className="transition-transform hover:scale-110 duration-300"
-            onClick={handleDeleteOrder}
-          >
-            <RiDeleteBin5Line color="red" className="size-8" />
-          </button>
-        )}
-
-        {effectiveOrder.status === "RESERVED" && (
-          <div className=" flex gap-3">
+        {effectiveOrder.status === "CREATED" &&
+          (isLoading ? (
+            <button disabled={true}>
+              <ThreeDot color="#32cd32" size="small" text="" textColor="" />
+            </button>
+          ) : (
             <button
-              onClick={handleDeleteOrder}
               className="transition-transform hover:scale-110 duration-300"
+              onClick={handleDeleteOrder}
             >
               <RiDeleteBin5Line color="red" className="size-8" />
             </button>
+          ))}
+
+        {effectiveOrder.status === "RESERVED" && (
+          <div className=" flex gap-3">
+            {isLoading ? (
+              <button disabled={true}>
+                <ThreeDot color="#32cd32" size="small" text="" textColor="" />
+              </button>
+            ) : (
+              <button
+                className="transition-transform hover:scale-110 duration-300"
+                onClick={handleDeleteOrder}
+              >
+                <RiDeleteBin5Line color="red" className="size-8" />
+              </button>
+            )}
             <button
               onClick={() => handlePayNow()}
               className="bg-yellow-400 px-4 py-1 rounded transition-transform hover:scale-110 duration-300"

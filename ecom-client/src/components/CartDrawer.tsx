@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateOrderMutation } from "../apiServices/orderApi";
 import toast from "react-hot-toast";
 import { clearCart } from "../redux/features/cart/cartSlice";
+import { ThreeDot } from "react-loading-indicators";
 
 type CartDrawerProps = {
   setIsCartOpen: (isCartOpen: boolean) => void;
@@ -14,7 +15,7 @@ type CartDrawerProps = {
 const CartDrawer = ({ setIsCartOpen }: CartDrawerProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [createOrder] = useCreateOrderMutation();
+  const [createOrder,{isLoading}] = useCreateOrderMutation();
   const isCartOpen = true;
   const totalItems = useAppSelector((state) => state.cart.totalQuantity);
   const cartItems = useAppSelector((state) => state.cart.items);
@@ -91,12 +92,28 @@ const CartDrawer = ({ setIsCartOpen }: CartDrawerProps) => {
 
         {/*checkout btn */}
         <div className={`m-3 ${totalItems === 0 ? "hidden" : "block"}`}>
-          <button
+          {isLoading ? (
+            <button
+              disabled={true}
+              className="w-full bg-gray-300  py-3 rounded-md"
+            >
+              <ThreeDot color="#32cd32" size="medium" text="" textColor="" />
+            </button>
+          ) : (
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-yellow-300  py-3 rounded-md transition-colors hover:scale-105 hover:bg-yellow-500"
+            >
+              Proceed to Checkout
+            </button>
+          )}
+
+          {/* <button
             onClick={handleCheckout}
             className="w-full bg-yellow-300  py-3 rounded-md transition-colors hover:scale-105 hover:bg-yellow-500"
           >
             Proceed to Checkout
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
