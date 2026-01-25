@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "inventory-reservation")
+@Table(name = "inventory-reservation",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"orderId", "productId"})
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +20,7 @@ public class InventoryReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false)
     private UUID orderId;
     @Column(nullable = false)
     private UUID productId;

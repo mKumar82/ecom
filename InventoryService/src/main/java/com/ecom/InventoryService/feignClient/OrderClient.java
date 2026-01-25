@@ -10,9 +10,9 @@ import java.util.UUID;
 @FeignClient(name = "ORDERSERVICE",path = "/orders")
 public interface OrderClient {
 
-    @GetMapping("/inventory-reserved/{orderId}")
+    @PostMapping("/inventory-reserved/{orderId}")
     void inventoryReserved(@PathVariable UUID orderId);
 
-    @GetMapping("/inventory-rejected/{orderId}")
+    @PostMapping("/inventory-rejected/{orderId}")
     void inventoryRejected(@PathVariable UUID orderId);
 }

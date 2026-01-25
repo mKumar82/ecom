@@ -33,6 +33,7 @@ public class InventoryController {
 
     @PostMapping("/order-created")
     public ResponseEntity<Void> orderCreated(@RequestBody OrderCreatedRequest request){
+        log.info("++++++++++++++ order created received in inventory {}",request.orderItems());
         UUID orderId = request.orderId();
         for (OrderItemRequest item : request.orderItems()) {
             UUID productId = UUID.fromString(item.productId().toString());
@@ -54,18 +55,21 @@ public class InventoryController {
 
     @GetMapping("/order-cancelled/{orderId}")
     public ResponseEntity<Void> orderCancelled(@PathVariable UUID orderId){
+        log.info("++++++++++++++ order cancel received in inventory {}",orderId);
         inventoryService.releaseStock(orderId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/payment-completed/{orderId}")
     public ResponseEntity<Void> paymentCompleted(@PathVariable UUID orderId){
+        log.info("++++++++++++++ payment completed received in inventory {}",orderId);
         inventoryService.confirmStock(orderId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/payment-failed/{orderId}")
     public ResponseEntity<Void> paymentFailed(@PathVariable UUID orderId){
+        log.info("++++++++++++++ payment failed received in inventory {}",orderId);
         inventoryService.releaseStock(orderId);
         return ResponseEntity.ok().build();
     }
