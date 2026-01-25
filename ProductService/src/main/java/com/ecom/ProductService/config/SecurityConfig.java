@@ -2,6 +2,7 @@ package com.ecom.ProductService.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,14 +17,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // public endpoints
-                        .requestMatchers(
-                                "/products/**",
-                                "/products/by-ids"
-                        ).permitAll()
+                                // allow CORS preflight
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                // public endpoints
+                                .requestMatchers(
+                                        "/products/**",
+                                        "/products/by-ids",
+                                        "/health"
+                                ).permitAll()
 
-                        // everything else protected
-//                        .anyRequest().authenticated()
+                                // everything else protected
+        //                        .anyRequest().authenticated()
                 );
 
         return http.build();
