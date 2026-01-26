@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // ✅ PUBLIC endpoints
-                        .pathMatchers("/userservice/auth/**","/productservice/products","/health").permitAll()
+                        .pathMatchers("/userservice/auth/**","/productservice/products","/**/health","/health").permitAll()
                         // 🔒 everything else requires JWT
                         .anyExchange().authenticated()
                 )
