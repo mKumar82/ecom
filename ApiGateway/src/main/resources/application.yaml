@@ -17,7 +17,7 @@ spring:
         # =======================
         # USER SERVICE
         # =======================
-        - id: user-service
+        - id: userservice
           uri: lb://USERSERVICE
           predicates:
             - Path=/userservice/**
@@ -27,7 +27,7 @@ spring:
         # =======================
         # PRODUCT SERVICE
         # =======================
-        - id: product-service
+        - id: productservice
           uri: lb://PRODUCTSERVICE
           predicates:
             - Path=/productservice/**
@@ -37,7 +37,7 @@ spring:
         # =======================
         # ORDER SERVICE
         # =======================
-        - id: order-service
+        - id: orderservice
           uri: lb://ORDERSERVICE
           predicates:
             - Path=/orderservice/**
@@ -47,7 +47,7 @@ spring:
         # =======================
         # INVENTORY SERVICE
         # =======================
-        - id: inventory-service
+        - id: inventoryservice
           uri: lb://INVENTORYSERVICE
           predicates:
             - Path=/inventoryservice/**
@@ -57,7 +57,7 @@ spring:
         # =======================
         # PAYMENT SERVICE
         # =======================
-        - id: payment-service
+        - id: paymentservice
           uri: lb://PAYMENTSERVICE
           predicates:
             - Path=/paymentservice/**
@@ -78,7 +78,7 @@ eureka:
 
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${PORT}
+    instance-id: ${spring.application.name}:${server.port}
 
 
 logging:
