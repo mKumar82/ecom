@@ -15,6 +15,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,15 +43,20 @@ public class PaymentService {
                 .build();
 
         Payment savedPayment = paymentRepository.save(payment);
-        String rediretUrl =
+        String callbackUrl = URLEncoder.encode(
+                frontendBaseUrl + "/payment-callback",
+                StandardCharsets.UTF_8
+        );
+        String redirectUrl =
                 frontendBaseUrl+"/payment-gateway"
                         + "?paymentId=" + payment.getId()
                         + "&orderId=" + payment.getOrderId()
                         + "&amount=" + payment.getAmount()
-                        + "&callbackUrl="+frontendBaseUrl+"/payment-callback";
+                        + "&callbackUrl="+callbackUrl;
+        log.info("Redirect URL = {}", redirectUrl);
         return PaymentResponse.builder()
                     .paymentId(savedPayment.getId())
-                    .redirectUrl(rediretUrl)
+                    .redirectUrl(redirectUrl)
                     .build();
 
 
