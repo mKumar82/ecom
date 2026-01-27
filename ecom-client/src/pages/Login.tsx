@@ -10,8 +10,8 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (e:any) => {
-    e.preventDefault(); 
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
     try {
       const response = await login({ email, password }).unwrap();
       console.log("JWT response:", response.token);
@@ -28,6 +28,7 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const isEmpty: boolean = !email || !password;
   console.log("-------------", isEmpty);
@@ -51,21 +52,33 @@ const Login = () => {
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             className="border p-2 rounded-md"
             required={true}
           />
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+              className="border rounded w-4 h-4"
+              id="showToggle"
+            />
+            <label htmlFor="showToggle" className="cursor-pointer">
+              Show Password
+            </label>
+          </div>
           <button
             disabled={isLoading || isEmpty}
             // onClick={handleLogin}
             type="submit"
             // className="bg-blue-600 text-white p-2 rounded-md mt-4 hover:bg-blue-700"
-            className={`px-4 py-2 rounded ${
+            className={`px-4 py-2 rounded cursor-pointer ${
               isLoading || isEmpty ? "bg-gray-400" : "bg-yellow-400"
             }`}
           >
-            {isLoading ? "Loggin..." : "Login"}
+            {isLoading ? "Loging..." : "Login"}
           </button>
         </form>
         <div className="flex justify-center">

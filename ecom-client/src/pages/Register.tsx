@@ -28,6 +28,8 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const isEmpty: boolean = !name || !email || !password;
 
@@ -58,16 +60,28 @@ const Register = () => {
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             className="border p-2 rounded-md"
             required={true}
           />
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+              className="border rounded w-4 h-4"
+              id="showToggle"
+            />
+            <label htmlFor="showToggle" className="cursor-pointer">
+              Show Password
+            </label>
+          </div>
           <button
             disabled={isLoading || isEmpty}
             // onClick={handleRegister}
             type="submit"
-            className={`px-4 py-2 rounded ${
+            className={`px-4 py-2 rounded cursor-pointer ${
               isLoading || isEmpty ? "bg-gray-400" : "bg-yellow-400"
             }`}
           >
