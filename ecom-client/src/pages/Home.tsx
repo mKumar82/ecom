@@ -15,10 +15,10 @@ const Home = () => {
         <Search />
 
         {/* Mobile filter button */}
-        <div className="flex justify-between items-center my-4 lg:hidden">
+        {/* <div className="flex justify-between items-center my-4 lg:hidden">
           <button className="border px-4 py-2 rounded-md">Filters</button>
           <span className="text-sm text-gray-500">Sort</span>
-        </div>
+        </div> */}
 
         <ProductGrid />
       </section>
