@@ -1,4 +1,3 @@
-import FilterSidebar from "../components/FilterSidebar";
 import ProductGrid from "../components/ProductGrid";
 
 import Search from "../components/Search";

@@ -3,7 +3,6 @@ import { FaBoxOpen } from "react-icons/fa6";
 import { FaShoppingCart } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/features/user/userSlice";
-import { PiVanDuotone } from "react-icons/pi";
 import { orderApi } from "../apiServices/orderApi";
 
 type NavbarProps = {
