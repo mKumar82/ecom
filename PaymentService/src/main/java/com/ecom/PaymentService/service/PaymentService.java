@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class PaymentService {
     private final KafkaToggleConfig kafkaToggleConfig;
     private final InventoryClient inventoryClient;
     private final OrderClient orderClient;
+    @Value("${frontend.base-url}")
+    private String frontendBaseUrl;
 
     @Transactional
     public PaymentResponse createPayment(UUID orderId, double amount){
@@ -39,11 +42,11 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
         String rediretUrl =
-                "http://localhost:5173/payment-gateway"
+                frontendBaseUrl+"/payment-gateway"
                         + "?paymentId=" + payment.getId()
                         + "&orderId=" + payment.getOrderId()
                         + "&amount=" + payment.getAmount()
-                        + "&callbackUrl=http://localhost:5173/payment-callback";
+                        + "&callbackUrl="+frontendBaseUrl+"/payment-callback";
         return PaymentResponse.builder()
                     .paymentId(savedPayment.getId())
                     .redirectUrl(rediretUrl)
